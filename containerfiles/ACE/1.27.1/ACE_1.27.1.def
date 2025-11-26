@@ -1,0 +1,45 @@
+Bootstrap: docker
+From: rocker/r-ver:4.3.2
+
+%labels
+    Description "ACE R/Bioconductor container with dependencies"
+    Maintainer "hsandakly"
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export R_LIBS="/usr/local/lib/R/site-library"
+    export PATH=/usr/local/bin:$PATH
+
+%post
+    set -eux
+
+    # Install system dependencies required by Bioconductor packages
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential libcurl4-openssl-dev libssl-dev libxml2-dev \
+        zlib1g-dev libbz2-dev liblzma-dev libncurses5-dev libpcre2-dev \
+        wget git ca-certificates && \
+        rm -rf /var/lib/apt/lists/*
+
+    # Install Bioconductor manager
+    R -q -e 'install.packages("BiocManager", repos="https://cloud.r-project.org")'
+
+    # Install ACE dependencies
+    R -q -e 'BiocManager::install(c("Rhtslib","Rsamtools","QDNAseq"), ask=FALSE, update=FALSE)'
+    R -q -e 'BiocManager::install(c("QDNAseq.hg19"), ask=FALSE, update=FALSE)'
+
+    # Install remotes to get the development version from GitHub
+    R -q -e 'install.packages("remotes", repos="https://cloud.r-project.org")'
+
+    # Install ACE development version (v1.26) from GitHub
+    R -q -e 'remotes::install_github("tgac-vumc/ACE")'
+    
+    # Install GitHub packages for hg38
+    R -q -e 'remotes::install_github("asntech/QDNAseq.hg38", force=TRUE)'
+
+%runscript
+    echo "Launching R with ACE installed..."
+    exec R "$@"
+
+%test
+    R -q -e 'library(ACE); packageVersion("ACE")'
