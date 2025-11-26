@@ -1,0 +1,14 @@
+executor: slurm
+
+executor-settings:
+  default:
+    slurm_partition: workq
+    slurm_extra: "--mem=64G"
+
+set-resources: 
+  basecalling:
+    slurm_partition: gpuq
+    slurm_extra: '"--gres=gpu:nvidia_a100" "--mem=128G"'
+
+use-apptainer: true
+apptainer-args: "--bind /home/username:/home/username --writable-tmpfs" 
