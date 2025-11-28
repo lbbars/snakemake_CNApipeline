@@ -1,4 +1,4 @@
-# Copy Number Alteration Analysis Pipeline
+# Copy Number Alteration Analysis Pipeline 
 A Snakemake workflow for ONT circulating tumor DNA (ctDNA) analysis
 
 This pipeline processes low-pass Whole Genome Sequencing with Oxford Nanopore to estimate copy-number alterations (CNAs) and tumor fraction from cell-free DNA (cfDNA). It performs:
